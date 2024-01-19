@@ -14,7 +14,18 @@ struct TodoListView: View {
     // Our list of items to complete
     @State private var items: [TodoItem] = []
     
+    @State var searchText = ""
     // MARK: Computed properties
+    // Provide list of to-do items filtered based on the search text
+    var filteredItems: [TodoItem] {
+        if searchText.isEmpty {
+            return items
+        } else {
+            return items.filter { item in
+                item.details.lowercased().contains(searchText.lowercased())
+            }
+        }
+    }
     var body: some View {
         NavigationStack {
             VStack {
@@ -42,7 +53,7 @@ struct TodoListView: View {
                     
                 } else {
                     List{
-                        ForEach(items) { currentItem in
+                        ForEach(filteredItems) { currentItem in
                             Label {
                                 Text(currentItem.details)
                             } icon: {
@@ -54,6 +65,7 @@ struct TodoListView: View {
                         }
                         .onDelete(perform: delete)
                     }
+                    .searchable(text: $searchText)
                 }
             }
             .navigationTitle("Tasks")
